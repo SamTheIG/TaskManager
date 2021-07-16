@@ -1,5 +1,5 @@
 from flask import Flask, render_template, Response, redirect, url_for, request, session, abort
-from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user
+from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 import config
 app = Flask(__name__)
 
@@ -28,7 +28,6 @@ user = User(0)
 
 # some protected url
 @app.route('/')
-@login_required
 def home():
     return render_template("index.html")
 
@@ -71,7 +70,19 @@ def load_user(userid):
 @app.route("/TM")
 @login_required
 def TM():
+    # username = current_user.username #TODO: create a normal user when the DB fixed
     return render_template("TM.html")
+
+@app.route("/add", methods=["GET", "POST"])
+@login_required
+def add():
+    if request.method == 'POST':
+        tname = request.form['tname']
+        print(tname) #TODO: connect this shit to DB to save new tasks
+        return redirect("/")
+    else:
+        return render_template("add.html")
+
 
 if __name__ == "__main__":
     app.run("0.0.0.0", 5000, debug=True)
